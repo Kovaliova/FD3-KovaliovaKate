@@ -1,0 +1,24 @@
+﻿html, body, #container{
+  height: 100%;
+  margin: 0;
+}
+
+.Shop
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: left;
+}
+
+.Shop h1
+{
+  color: red;
+  font-size: 30px;
+}
+
+.Shop p{
+  font-size: 18px;
+}
