@@ -5,13 +5,13 @@ import './Shop.css';
 class Shop extends React.Component {
 
   render() {
-    const { products } = this.props;
+    const { name, address, products } = this.props;
 
     return (
       <div className='Shop'>
          <div className='ShopInformation'>
-            <h1>Магазин: {this.props.name}</h1>
-            <p>Адрес: {this.props.address}</p>
+            <h1>Магазин: {name}</h1>
+            <p>Адрес: {address}</p>
         </div>
           <div className="ProductList">
             {products.map((product) => (
