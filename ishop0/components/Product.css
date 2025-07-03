@@ -46,3 +46,7 @@
 .Shop p.Stock span{
     font-size: 14px;
 }
+.Product.Selected {
+  border: 2px solid #007bff;
+  background-color: #f0f8ff;
+}
