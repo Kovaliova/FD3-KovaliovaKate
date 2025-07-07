@@ -7,8 +7,34 @@ class Filter extends React.Component {
         this.state = {
             filterText: '',
             sortAlpha: false,
+            filteredItems: this.getFilteredItems(props.items, '', false),
         };
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        const propsChanged = prevProps.items !== this.props.items;
+        const filterTextChanged = prevState.filterText !== this.state.filterText;
+        const sortAlphaChanged = prevState.sortAlpha !== this.state.sortAlpha;
+
+        if (propsChanged || filterTextChanged || sortAlphaChanged) {
+            const filteredItems = this.getFilteredItems(
+            this.props.items,
+            this.state.filterText,
+            this.state.sortAlpha
+        );
+        this.setState({ filteredItems });
+        }
+    }
+
+    getFilteredItems = (items, filterText, sortAlpha) => {
+        let result = items.filter(item =>
+            item.toLowerCase().includes(filterText.toLowerCase())
+        );
+        if (sortAlpha) {
+            result = result.slice().sort((a, b) => a.localeCompare(b));
+        }
+        return result;
+    };
 
     handleTextChange = (e) => {
         this.setState({ filterText: e.target.value });
@@ -26,18 +52,7 @@ class Filter extends React.Component {
     }
 
     render(){
-        const { items } = this.props;
-        const { filterText, sortAlpha } = this.state;
-
-        let filteredItems = items.filter ( item =>
-            item.toLowerCase().includes(filterText.toLowerCase())
-        );
-
-        if(sortAlpha) {
-            filteredItems = filteredItems.slice().sort((a,b) =>
-                a.localeCompare(b)
-            );
-        }
+        const { filteredItems, filterText, sortAlpha } = this.state;
 
         return (
             <div className='filter-container'>

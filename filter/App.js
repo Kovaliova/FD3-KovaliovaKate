@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-import Filter from './ Filter';
+import Filter from './components/Filter';
 
 const words = [
   'california', 'everything', 'aboveboard', 'washington',
