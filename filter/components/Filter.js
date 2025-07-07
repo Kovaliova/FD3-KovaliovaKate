@@ -11,21 +11,6 @@ class Filter extends React.Component {
         };
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const propsChanged = prevProps.items !== this.props.items;
-        const filterTextChanged = prevState.filterText !== this.state.filterText;
-        const sortAlphaChanged = prevState.sortAlpha !== this.state.sortAlpha;
-
-        if (propsChanged || filterTextChanged || sortAlphaChanged) {
-            const filteredItems = this.getFilteredItems(
-            this.props.items,
-            this.state.filterText,
-            this.state.sortAlpha
-        );
-        this.setState({ filteredItems });
-        }
-    }
-
     getFilteredItems = (items, filterText, sortAlpha) => {
         let result = items.filter(item =>
             item.toLowerCase().includes(filterText.toLowerCase())
@@ -36,22 +21,35 @@ class Filter extends React.Component {
         return result;
     };
 
+    updateFilteredItems = () => {
+        const filteredItems = this.getFilteredItems(
+            this.props.items,
+            this.state.filterText,
+            this.state.sortAlpha
+        );
+        this.setState({ filteredItems });
+    };
+
     handleTextChange = (e) => {
-        this.setState({ filterText: e.target.value });
-    }
+        this.setState({ filterText: e.target.value }, this.updateFilteredItems);
+    };
 
     handleCheckboxChange = (e) => {
-        this.setState({ sortAlpha: e.target.checked });
+        this.setState({ sortAlpha: e.target.checked }, this.updateFilteredItems);
     }
 
     handleReset = () => {
-        this.setState ({
-            filterText: '',
-            sortAlpha: false
-        })
-    }
+        this.setState(
+            {
+                filterText: '',
+                sortAlpha: false,
+            },
+            this.updateFilteredItems
+        );
+    };
 
     render(){
+        
         const { filteredItems, filterText, sortAlpha } = this.state;
 
         return (
