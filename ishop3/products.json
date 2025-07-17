@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "name": "Ноутбук Lenovo IdeaPad Slim 3 (82XQ00B5PS)",
+        "imageUrl": "https://cdn21vek.by/imgproxy/preview_b/plain/img/galleries/8914/166/ideapadslim382xq00b5ps_lenovo_8914166_660c2abd4fe26.jpeg",
+        "price": "2600",
+        "stock": 999
+    },
+    {
+        "id": 2,
+        "name": "Смартфон Apple iPhone 13 128GB",
+        "imageUrl": "https://cdn21vek.by/imgproxy/preview_b/plain/img/galleries/7116/374/iphone13128gbmlpg3_apple_637f118109394.jpeg",
+        "price": "2700",
+        "stock": 99
+    },
+    {
+        "id": 3,
+        "name": "Беспроводные наушники JBL Tune 520BT",
+        "imageUrl": "https://cdn21vek.by/img/galleries/8670/179/tune520btjblt520btblk_jbl_6566d736a0958.jpeg",
+        "price": "129",
+        "stock": 99999
+    },
+    {
+        "id": 4,
+        "name": "Клавиатура Defender Spark GK-300L RU / 45300",
+        "imageUrl": "https://cdn21vek.by/imgproxy/preview_b/plain/img/galleries/6931/408/sparkgk300lru45300_defender_6152bdbb55443.jpeg",
+        "price": "26",
+        "stock": 827
+    },
+    {
+        "id": 5,
+        "name": "Вентилятор Primera SFP-4002MX",
+        "imageUrl": "https://cdn21vek.by/imgproxy/preview_b/plain/img/galleries/8333/128/sfp4002mx_primera_648872a9bebdc.jpeg",
+        "price": "71",
+        "stock": 45
+    },
+    {
+        "id": 6,
+        "name": "Портативное зарядное устройство XO PR231 10000mAh",
+        "imageUrl": "https://cdn21vek.by/imgproxy/preview_b/plain/img/galleries/9314/603/pr23110000mah_xo_9314603_58c635dc5c280a4789ebdc041446b51b.jpg",
+        "price": "26",
+        "stock": 1000
+    }
+]
