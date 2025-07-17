@@ -78,19 +78,19 @@ class Shop extends React.Component {
     });
   };
 
-  handleChange = (field, value) => {
-    this.setState(({ formState }) => {
-      const newFormState = { ...formState, [field]: value };
-      const errors = this.validate(newFormState);
+handleChange = (field, value) => {
+  this.setState(({ formState }) => {
+    const newFormState = { ...formState, [field]: value };
+    const errors = this.validate(newFormState);
 
-      return {
-        formState: newFormState,
-        formErrors: errors,
-        isDirty: true,
-        showErrors: false,
-      };
-    });
-  };
+    return {
+      formState: newFormState,
+      formErrors: errors,
+      isDirty: true,
+      showErrors: true,
+    };
+  });
+};
 
   validate = (product) => {
     const errors = {};
@@ -219,7 +219,9 @@ class Shop extends React.Component {
             </div>
           ))}
         </div>
-        <button className="Save" onClick={this.handleSave}>Сохранить</button>
+        <button  className="Save" onClick={this.handleSave} disabled={!isValid}>
+          Сохранить
+        </button>
         <button className="Cancel" onClick={this.handleCancel}>Отмена</button>
       </div>
     );
@@ -227,7 +229,7 @@ class Shop extends React.Component {
 
   render() {
     const { products, selectedProductId, editedProductId, formMode } = this.state;
-    const disableActions = formMode === 'edit' || formMode === 'add';
+    const disableActions = (formMode === 'edit' || formMode === 'add') && this.state.isDirty;
 
     return (
       <div className="Shop">
