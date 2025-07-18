@@ -78,19 +78,31 @@ class Shop extends React.Component {
     });
   };
 
-handleChange = (field, value) => {
-  this.setState(({ formState }) => {
-    const newFormState = { ...formState, [field]: value };
-    const errors = this.validate(newFormState);
+  isFormValid = () => {
+    const { formState } = this.state;
+    if (!formState) return false;
 
-    return {
-      formState: newFormState,
-      formErrors: errors,
-      isDirty: true,
-      showErrors: true,
-    };
-  });
-};
+    const nameValid = formState.name && formState.name.trim() !== '';
+    const priceValid = formState.price && formState.price.toString().trim() !== '';
+    const stockValid = formState.stock && formState.stock.toString().trim() !== '';
+    const imageValid = formState.imageUrl && formState.imageUrl.trim() !== '';
+
+    return nameValid && priceValid && stockValid && imageValid;
+  };
+
+  handleChange = (field, value) => {
+    this.setState(({ formState }) => {
+      const newFormState = { ...formState, [field]: value };
+      const errors = this.validate(newFormState);
+
+      return {
+        formState: newFormState,
+        formErrors: errors,
+        isDirty: true,
+        showErrors: true,
+      };
+    });
+  };
 
   validate = (product) => {
     const errors = {};
@@ -178,7 +190,6 @@ handleChange = (field, value) => {
     if (!formMode) return null;
 
     const isEditable = formMode === 'edit' || formMode === 'add';
-    const isValid = Object.keys(formErrors).length === 0;
 
     let headerText = '';
     if (formMode === 'add') {
@@ -211,7 +222,7 @@ handleChange = (field, value) => {
               <label>{field}:</label>
               <input
                 type="text"
-                value={formState[field]}
+                value={formState[field] || ''}
                 onChange={e => this.handleChange(field, e.target.value)}
                 disabled={!isEditable}
               />
@@ -219,7 +230,7 @@ handleChange = (field, value) => {
             </div>
           ))}
         </div>
-        <button  className="Save" onClick={this.handleSave} disabled={!isValid}>
+        <button className="Save" onClick={this.handleSave} disabled={!this.isFormValid()}>
           Сохранить
         </button>
         <button className="Cancel" onClick={this.handleCancel}>Отмена</button>
