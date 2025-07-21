@@ -137,16 +137,15 @@ class Shop extends React.Component {
     });
   };
 
- isFormValid = () => {
-  const { formErrors, formState } = this.state;
-  const atLeastOneFieldFilled = formState && ['name', 'price', 'stock', 'imageUrl'].some(
-    field => formState[field] !== undefined && formState[field].toString().trim() !== ''
-  );
-  const noErrors = formErrors && Object.values(formErrors).every(error => !error);
+  isFormValid = () => {
+    const { formErrors, formState } = this.state;
 
-  return atLeastOneFieldFilled && noErrors;
-};
-
+    const allFieldsFilled = formState && ['name', 'price', 'stock', 'imageUrl'].every(
+      field => formState[field] !== undefined && formState[field] !== ''
+    );
+    const noErrors = formErrors && Object.values(formErrors).every(error => !error);
+    return allFieldsFilled && noErrors;
+  };
 
   handleSave = () => {
     const { formState, products, formMode } = this.state;
