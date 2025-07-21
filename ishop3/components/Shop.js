@@ -12,8 +12,9 @@ class Shop extends React.Component {
       formState: null,
       formMode: null,
       formErrors: {},
+      touchedFields: {},
       isDirty: false,
-      showErrors: false, 
+      showErrors: false,
     };
   }
 
@@ -36,6 +37,7 @@ class Shop extends React.Component {
       formState: product,
       formMode: 'view',
       formErrors: {},
+      touchedFields: {},
       isDirty: false,
       showErrors: false,
     });
@@ -55,6 +57,8 @@ class Shop extends React.Component {
         formMode: null,
         formState: null,
         editedProductId: null,
+        formErrors: {},
+        touchedFields: {},
         isDirty: false,
         showErrors: false,
       };
@@ -73,65 +77,92 @@ class Shop extends React.Component {
       formState: { ...product },
       formMode: 'edit',
       formErrors: {},
+      touchedFields: {},
       isDirty: false,
       showErrors: false,
     });
   };
 
-  isFormValid = () => {
-    const { formState } = this.state;
-    if (!formState) return false;
-
-    const nameValid = formState.name && formState.name.trim() !== '';
-    const priceValid = formState.price && formState.price.toString().trim() !== '';
-    const stockValid = formState.stock && formState.stock.toString().trim() !== '';
-    const imageValid = formState.imageUrl && formState.imageUrl.trim() !== '';
-
-    return nameValid && priceValid && stockValid && imageValid;
+  handleAddNew = () => {
+    this.setState({
+      formMode: 'add',
+      formState: { name: '', price: '', stock: '', imageUrl: '' },
+      formErrors: {},
+      touchedFields: {},
+      isDirty: false,
+      selectedProductId: null,
+      editedProductId: null,
+      showErrors: false,
+    });
   };
 
-  handleChange = (field, value) => {
-    this.setState(({ formState }) => {
-      const newFormState = { ...formState, [field]: value };
-      const errors = this.validate(newFormState);
-
-      return {
-        formState: newFormState,
-        formErrors: errors,
-        isDirty: true,
-        showErrors: true,
-      };
-    });
+  validateField = (field, value) => {
+    switch(field) {
+      case 'name':
+        return !value || value.trim().length < 2 ? 'Заполните имя продукта (мин 2 символа)' : null;
+      case 'price':
+        return !value || isNaN(value) || +value <= 0 ? 'Цена должна быть положительным числом' : null;
+      case 'stock':
+        return value === '' || isNaN(value) || +value < 0 ? 'Остаток не может быть отрицательным' : null;
+      case 'imageUrl':
+        return !value || !/^https?:\/\//.test(value) ? 'Некорректный URL изображения' : null;
+      default:
+        return null;
+    }
   };
 
   validate = (product) => {
     const errors = {};
-
-    if (!product.name || product.name.length < 2)
-      errors.name = 'Заполните имя продукта';
-
-    if (!product.price || isNaN(product.price) || product.price <= 0)
-      errors.price = 'Заполните поле с ценой';
-
-    if (!product.stock || isNaN(product.stock) || product.stock < 0)
-      errors.stock = 'Заполните поле с остатком продукта';
-
-    if (!product.imageUrl || !product.imageUrl.match(/^https?:\/\//))
-      errors.imageUrl = 'Некорректный URL изображения';
-
+    ['name', 'price', 'stock', 'imageUrl'].forEach(field => {
+      const error = this.validateField(field, product[field]);
+      if (error) errors[field] = error;
+    });
     return errors;
   };
 
+  handleChange = (field, value) => {
+    this.setState(({ formState, formErrors, touchedFields }) => {
+      const newFormState = { ...formState, [field]: value };
+      const error = this.validateField(field, value);
+      const newFormErrors = { ...formErrors, [field]: error };
+      const newTouchedFields = { ...touchedFields, [field]: true };
+
+      return {
+        formState: newFormState,
+        formErrors: newFormErrors,
+        touchedFields: newTouchedFields,
+        isDirty: true,
+        showErrors: false,
+      };
+    });
+  };
+
+ isFormValid = () => {
+  const { formErrors, formState } = this.state;
+  const atLeastOneFieldFilled = formState && ['name', 'price', 'stock', 'imageUrl'].some(
+    field => formState[field] !== undefined && formState[field].toString().trim() !== ''
+  );
+  const noErrors = formErrors && Object.values(formErrors).every(error => !error);
+
+  return atLeastOneFieldFilled && noErrors;
+};
+
+
   handleSave = () => {
     const { formState, products, formMode } = this.state;
+
     const errors = this.validate(formState);
 
     if (Object.keys(errors).length > 0) {
-      this.setState({ formErrors: errors, showErrors: true });
+      this.setState({
+        formErrors: errors,
+        showErrors: true,
+        touchedFields: { name: true, price: true, stock: true, imageUrl: true },
+      });
       return;
     }
 
-    this.setState({ showErrors: false });
+    this.setState({ showErrors: false, touchedFields: {} });
 
     if (formMode === 'edit') {
       const updatedProducts = products.map(p =>
@@ -144,6 +175,7 @@ class Shop extends React.Component {
         isDirty: false,
         formErrors: {},
         editedProductId: null,
+        selectedProductId: formState.id,
       });
 
     } else if (formMode === 'add') {
@@ -152,10 +184,11 @@ class Shop extends React.Component {
       this.setState({
         products: [...products, newProduct],
         formMode: null,
-        selectedProductId: null,
+        selectedProductId: newProduct.id,
         formState: null,
         isDirty: false,
         formErrors: {},
+        editedProductId: null,
       });
     }
   };
@@ -167,25 +200,14 @@ class Shop extends React.Component {
       selectedProductId: null,
       formState: null,
       formErrors: {},
+      touchedFields: {},
       isDirty: false,
-      showErrors: false,
-    });
-  };
-
-  handleAddNew = () => {
-    this.setState({
-      formMode: 'add',
-      formState: { name: '', price: '', stock: '', imageUrl: '' },
-      formErrors: {},
-      isDirty: false,
-      selectedProductId: null,
-      editedProductId: null,
       showErrors: false,
     });
   };
 
   renderForm = () => {
-    const { formState, formErrors, formMode, showErrors } = this.state;
+    const { formState, formErrors, formMode, showErrors, touchedFields } = this.state;
 
     if (!formMode) return null;
 
@@ -226,7 +248,9 @@ class Shop extends React.Component {
                 onChange={e => this.handleChange(field, e.target.value)}
                 disabled={!isEditable}
               />
-              {showErrors && formErrors[field] && <span className="Error">{formErrors[field]}</span>}
+              {(touchedFields[field] || showErrors) && formErrors[field] && (
+                <span className="Error">{formErrors[field]}</span>
+              )}
             </div>
           ))}
         </div>
@@ -239,8 +263,8 @@ class Shop extends React.Component {
   };
 
   render() {
-    const { products, selectedProductId, editedProductId, formMode } = this.state;
-    const disableActions = (formMode === 'edit' || formMode === 'add') && this.state.isDirty;
+    const { products, selectedProductId, formMode, isDirty } = this.state;
+    const disableActions = (formMode === 'edit' || formMode === 'add') && isDirty;
 
     return (
       <div className="Shop">

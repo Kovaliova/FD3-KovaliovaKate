@@ -1,12 +1,18 @@
 import React from 'react';
 
 class ProductCard extends React.Component {
+  handleChange = (field, value) => {
+    const { onChange } = this.props;
+    onChange(field, value);
+  };
+
   render() {
     const {
       product,
       formMode,
       formErrors,
-      onChange,
+      touchedFields,
+      showErrors,
       onSave,
       onCancel,
     } = this.props;
@@ -32,10 +38,12 @@ class ProductCard extends React.Component {
             <input
               type="text"
               value={product[field]}
-              onChange={(e) => onChange(field, e.target.value)}
+              onChange={(e) => this.handleChange(field, e.target.value)}
               disabled={!isEditable}
             />
-            {formErrors[field] && <span className="Error">{formErrors[field]}</span>}
+            {(touchedFields?.[field] || showErrors) && formErrors?.[field] && (
+              <span className="Error">{formErrors[field]}</span>
+            )}
           </div>
         ))}
         {isEditable && (
