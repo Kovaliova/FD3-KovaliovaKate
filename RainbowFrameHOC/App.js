@@ -4,9 +4,8 @@ import RainbowFrame from './components/RainbowFrame';
 import DoubleButton from './components/DoubleButton';
 import withRainbowFrame from './components/withRainbowFrame';
 
-const colors = ['red','orange', 'yellow','green', '#00BFFF', 'blue', 'purple'];
-const rainbowFrame = new withRainbowFrame(colors);
-const FramedDoubleButton = rainbowFrame.wrap(DoubleButton);
+let colors = ['red','orange', 'yellow','green', '#00BFFF', 'blue', 'purple'];
+let FramedDoubleButton = withRainbowFrame(colors)(DoubleButton);
 
 ReactDOM.render(
   <div>
