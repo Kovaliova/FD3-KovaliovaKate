@@ -2,13 +2,11 @@
 import ReactDOM from 'react-dom';
 import RainbowFrame from './components/RainbowFrame';
 import DoubleButton from './components/DoubleButton';
-import RainbowFrameHOC from './components/withRainbowFrame';
+import withRainbowFrame from './components/withRainbowFrame';
 
 const colors = ['red','orange', 'yellow','green', '#00BFFF', 'blue', 'purple'];
-
-const rainbowFrameHOC = new RainbowFrameHOC(colors);
-
-const FramedDoubleButton = rainbowFrameHOC.wrap(DoubleButton);
+const rainbowFrame = new withRainbowFrame(colors);
+const FramedDoubleButton = rainbowFrame.wrap(DoubleButton);
 
 ReactDOM.render(
   <div>

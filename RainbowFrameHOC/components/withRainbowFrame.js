@@ -1,6 +1,6 @@
 import React from 'react';
 
-class RainbowFrameHOC {
+class withRainbowFrame {
   constructor(colors) {
     this.colors = colors;
   }
@@ -8,7 +8,7 @@ class RainbowFrameHOC {
   wrap(WrappedComponent) {
     const colors = this.colors;
 
-    return class RainbowFrameWrapper extends React.Component {
+    return class withRainbowFrameWrapper extends React.Component {
       render() {
         let content = (
           <WrappedComponent {...this.props}>
@@ -28,4 +28,4 @@ class RainbowFrameHOC {
   }
 }
 
-export default RainbowFrameHOC;
+export default withRainbowFrame;
