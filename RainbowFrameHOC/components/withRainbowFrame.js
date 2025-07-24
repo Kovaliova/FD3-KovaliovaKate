@@ -1,25 +1,11 @@
 import React from 'react';
 
-function withRainbowFrame(colors) {
-  return function(WrappedComponent) {
-    return class WithRainbowFrame extends React.Component {
-      render() {
-        let content = (
-          <WrappedComponent {...this.props}>
-              {this.props.children}
-          </WrappedComponent>
-        );
+const withRainbowFrame = (colors) => (WrappedComponent) => (props) => {
+  const content = <WrappedComponent {...props} />;
 
-        colors.forEach((color, index) => {
-        content = (
-          <div key={index} style={{ border: `5px solid ${color}`, padding: '5px', boxSizing: 'border-box'}}> {content} </div>
-        );
-      });
-
-      return content;
-    }
-   }
-  }
+  return colors.reduce((acc, color, index) => (
+      <div key={index} style={{ border: `5px solid ${color}`, padding: '5px', boxSizing: 'border-box', }}> {acc} </div>
+  ), content);
 }
 
 export default withRainbowFrame;
