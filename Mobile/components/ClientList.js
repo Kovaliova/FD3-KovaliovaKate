@@ -5,31 +5,26 @@ class ClientList extends React.PureComponent {
   render() {
     console.log("ClientList render");
 
-    const headerRow = React.createElement(
-      "tr",
-      null,
-      React.createElement("th", null, "Фамилия"),
-      React.createElement("th", null, "Имя"),
-      React.createElement("th", null, "Отчество"),
-      React.createElement("th", null, "Баланс"),
-      React.createElement("th", null, "Статус"),
-      React.createElement("th", null, "Редактировать"),
-      React.createElement("th", null, "Удалить")
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th>Баланс</th>
+            <th>Статус</th>
+            <th>Редактировать</th>
+            <th>Удалить</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.props.clients.map(client => (
+            <ClientRow key={client.id} client={client} isEditing={this.props.editingClients.has(client.id)}/>
+          ))}
+        </tbody>
+      </table>
     );
-
-    const thead = React.createElement("thead", null, headerRow);
-
-    const bodyRows = this.props.clients.map(client =>
-      React.createElement(ClientRow, {
-        key: client.id,
-        client: client,
-        isEditing: this.props.editingClients.has(client.id),
-      })
-    );
-
-    const tbody = React.createElement("tbody", null, bodyRows);
-
-    return React.createElement("table", null, thead, tbody);
   }
 }
 

@@ -94,24 +94,15 @@ class App extends React.PureComponent {
 
   render() {
     console.log('App render');
-    return React.createElement(
-      React.Fragment,
-      null,
-      React.createElement(FilterButtons),
-      React.createElement(ClientList, {
-        clients: this.getFilteredClients(),
-        editingClients: this.state.editingClients,
-      }),
-      React.createElement(
-        'button',
-        { onClick: () => mobileEvents.emit('add'), style: { marginTop: '20px' } },
-        'Добавить клиента'
-      )
+
+  return (
+      <React.Fragment>
+        <FilterButtons />
+        <ClientList clients={this.getFilteredClients()} editingClients={this.state.editingClients}/>
+        <button onClick={() => mobileEvents.emit('add')} style={{ marginTop: '20px' }}>Добавить клиента</button>
+      </React.Fragment>
     );
   }
 }
 
-ReactDOM.render(
-  React.createElement(App),
-  document.getElementById('container')
-);
+ReactDOM.render(<App />, document.getElementById('container'));

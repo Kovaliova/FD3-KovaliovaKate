@@ -15,57 +15,50 @@ class ClientRow extends React.PureComponent {
   }
 
   handleStartEdit() {
-    mobileEvents.emit('startEdit', this.props.client.id);
+    mobileEvents.emit("startEdit", this.props.client.id);
   }
 
   handleSaveClick() {
-    mobileEvents.emit(
-      'edit',
-      this.props.client.id,
-      this.surnameRef.current.value,
-      this.firstNameRef.current.value,
-      this.patronymicRef.current.value,
-      parseFloat(this.balanceRef.current.value)
-    );
+    mobileEvents.emit("edit", this.props.client.id, this.surnameRef.current.value, this.firstNameRef.current.value, this.patronymicRef.current.value, parseFloat(this.balanceRef.current.value));
   }
 
   handleDelete() {
-    mobileEvents.emit('delete', this.props.client.id);
+    mobileEvents.emit("delete", this.props.client.id);
+  }
+
+  renderInputOrText(value, ref, type = "text") {
+    const { isEditing } = this.props;
+    if (!isEditing) {
+      return value;
+    }
+    const className = type === "number" ? "visible-input balance-input" : "visible-input cell-input";
+    return <input defaultValue={value} ref={ref} type={type} className={className} />;
   }
 
   render() {
-    console.log('ClientRow render', this.props.client.id);
+    console.log("ClientRow render", this.props.client.id);
 
-    const client = this.props.client;
+    const { client, isEditing } = this.props;
     const status = client.balance >= 0 ? "Active" : "Disable";
-    const isEditing = this.props.isEditing;
 
-    const inputClass = isEditing ? "visible-input cell-input" : "hidden-input";
+    const editButton = isEditing ? (
+      <button onClick={this.handleSaveClick} className="action-button edit-button">Сохранить</button>
+    ) : (<button onClick={this.handleStartEdit} className="action-button edit-button">Редактировать</button>);
 
-    const editButton = isEditing
-      ? React.createElement('button', { onClick: this.handleSaveClick, className: "action-button edit-button" }, 'Сохранить')
-      : React.createElement('button', { onClick: this.handleStartEdit, className: "action-button edit-button" }, 'Редактировать');
-
-    return React.createElement(
-      "tr",
-      { className: "client-row" },
-      React.createElement("td", null,
-        !isEditing ? client.surname : React.createElement("input", { defaultValue: client.surname, ref: this.surnameRef, className: inputClass })
-      ),
-      React.createElement("td", null,
-        !isEditing ? client.firstName : React.createElement("input", { defaultValue: client.firstName, ref: this.firstNameRef, className: inputClass })
-      ),
-      React.createElement("td", null,
-        !isEditing ? client.patronymic : React.createElement("input", { defaultValue: client.patronymic, ref: this.patronymicRef, className: inputClass })
-      ),
-      React.createElement("td", null,
-        !isEditing ? client.balance : React.createElement("input", { defaultValue: client.balance, ref: this.balanceRef, type: "number", className: inputClass + " balance-input" })
-      ),
-      React.createElement("td", { className: `status-cell ${status === "Active" ? "status-active" : "status-disabled"}` }, status),
-      React.createElement("td", null, editButton),
-      React.createElement("td", null,
-        React.createElement("button", { onClick: this.handleDelete, className: "action-button delete-button" }, "Удалить")
-      )
+    return (
+      <tr className="client-row">
+        <td>{this.renderInputOrText(client.surname, this.surnameRef)}</td>
+        <td>{this.renderInputOrText(client.firstName, this.firstNameRef)}</td>
+        <td>{this.renderInputOrText(client.patronymic, this.patronymicRef)}</td>
+        <td>{this.renderInputOrText(client.balance, this.balanceRef, "number")}</td>
+        <td className={`status-cell ${status === "Active" ? "status-active" : "status-disabled"}`}>
+          {status}
+        </td>
+        <td>{editButton}</td>
+        <td>
+          <button onClick={this.handleDelete} className="action-button delete-button">Удалить</button>
+        </td>
+      </tr>
     );
   }
 }
