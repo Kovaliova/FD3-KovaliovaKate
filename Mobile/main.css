@@ -1,0 +1,53 @@
+.hidden-input {
+  display: none;
+}
+table{
+    width: 50%;
+}
+
+th, td{
+    border-bottom: 1px solid #ddd;
+    padding: 10px 5px;
+    text-align: left;
+}
+
+.visible-input {
+  display: inline-block;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.balance-input {
+  text-align: right;
+}
+
+.status-cell {
+  text-align: center;
+  color: white;
+}
+
+.status-active {
+  background-color: green;
+}
+
+.status-disabled {
+  background-color: red; 
+}
+
+.action-button {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 2px;
+  color: white;
+}
+
+.edit-button {
+  background-color: #2196f3;
+}
+
+.delete-button {
+  background-color: #e91e63; 
+}
