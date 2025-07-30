@@ -1,4 +1,12 @@
+// ProductCard.js
 import React from 'react';
+import { withTooltip } from './WithTooltip';
+
+const SaveButton = (props) => <button {...props}>{props.children}</button>;
+const CancelButton = (props) => <button {...props}>{props.children}</button>;
+
+const SaveButtonWithTooltip = withTooltip('Сохранить изменения', 'top', 300)(SaveButton);
+const CancelButtonWithTooltip = withTooltip('Отменить изменения', 'top', 300)(CancelButton);
 
 class ProductCard extends React.Component {
   handleChange = (field, value) => {
@@ -21,7 +29,7 @@ class ProductCard extends React.Component {
 
     const isEditable = formMode === 'edit' || formMode === 'add';
 
-    const isValid = !formErrors || Object.keys(formErrors).length === 0;
+    const isValid = !formErrors || Object.values(formErrors).every((e) => !e);
 
     return (
       <div className="ProductCard">
@@ -32,6 +40,7 @@ class ProductCard extends React.Component {
             ? 'Редактирование товара'
             : 'Просмотр товара'}
         </h3>
+
         {['name', 'price', 'stock', 'imageUrl'].map((field) => (
           <div key={field} className="FormField">
             <label>{field}:</label>
@@ -46,12 +55,11 @@ class ProductCard extends React.Component {
             )}
           </div>
         ))}
+
         {isEditable && (
           <div className="FormButtons">
-            <button onClick={onSave} disabled={!isValid}>
-              {formMode === 'add' ? 'Добавить' : 'Сохранить'}
-            </button>
-            <button onClick={onCancel}>Отмена</button>
+            <SaveButtonWithTooltip onClick={onSave} disabled={!isValid}>{formMode === 'add' ? 'Добавить' : 'Сохранить'}</SaveButtonWithTooltip>
+            <CancelButtonWithTooltip onClick={onCancel}>Отмена</CancelButtonWithTooltip>
           </div>
         )}
       </div>

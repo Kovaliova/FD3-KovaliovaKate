@@ -1,6 +1,12 @@
 import React from 'react';
 import Product from './Product';
+import { withTooltip } from './WithTooltip';
 import './Shop.css';
+
+const Button = (props) => <button {...props} />;
+
+const SaveButtonWithTooltip = withTooltip(<span>Сохранить изменения</span>, 'top', 300)(Button);
+const CancelButtonWithTooltip = withTooltip(<span>Отменить изменения</span>, 'top', 300)(Button);
 
 class Shop extends React.Component {
   constructor(props) {
@@ -253,10 +259,17 @@ class Shop extends React.Component {
             </div>
           ))}
         </div>
-        <button className="Save" onClick={this.handleSave} disabled={!this.isFormValid()}>
-          Сохранить
-        </button>
-        <button className="Cancel" onClick={this.handleCancel}>Отмена</button>
+       <div className="FormButtons">
+          <SaveButtonWithTooltip
+            className="Save"
+            onClick={this.handleSave}
+            disabled={!this.isFormValid()}
+          >Сохранить</SaveButtonWithTooltip>
+          <CancelButtonWithTooltip
+            className="Cancel"
+            onClick={this.handleCancel}
+          >Отмена</CancelButtonWithTooltip>
+        </div>
       </div>
     );
   };
@@ -264,7 +277,10 @@ class Shop extends React.Component {
   render() {
     const { products, selectedProductId, formMode, isDirty } = this.state;
     const disableActions = (formMode === 'edit' || formMode === 'add') && isDirty;
-
+    const EditButtonWithTooltip = withTooltip(<span>Редактировать товар</span>, 'top', 300)(Button);
+    const DeleteButtonWithTooltip = withTooltip(<span>Удалить товар</span>, 'top', 300)(Button);
+    const NewButtonWithTooltip = withTooltip(<span>Добавить товар</span>, 'top', 300, 20)(Button);
+    
     return (
       <div className="Shop">
         <table className="ProductTable">
@@ -287,11 +303,20 @@ class Shop extends React.Component {
                 onDelete={() => this.handleDelete(product.id)}
                 onEdit={() => this.handleEdit(product.id)}
                 isDisabled={disableActions}
+                EditButtonWrapper={EditButtonWithTooltip}
+                DeleteButtonWrapper={DeleteButtonWithTooltip}
               />
             ))}
           </tbody>
         </table>
-        <button className="NewBtn" onClick={this.handleAddNew} disabled={disableActions}>Новый</button>
+        <NewButtonWithTooltip
+          className="NewBtn"
+          onClick={this.handleAddNew}
+          disabled={disableActions}
+          offsetTop={20}
+        >
+          Новый
+        </NewButtonWithTooltip>
         {this.renderForm()}
       </div>
     );
