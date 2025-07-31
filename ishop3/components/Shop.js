@@ -313,7 +313,6 @@ class Shop extends React.Component {
           className="NewBtn"
           onClick={this.handleAddNew}
           disabled={disableActions}
-          offsetTop={20}
         >
           Новый
         </NewButtonWithTooltip>
