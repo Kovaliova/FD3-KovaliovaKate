@@ -1,71 +1,45 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Controls from './Controls';
 import List from './List';
 import './Filter.css';
 
-class Filter extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            filterText: '',
-            sortAlpha: false,
-            filteredItems: this.getFilteredItems(props.items, '', false),
-        };
+const Filter = ({ items }) => {
+  const [filterText, setFilterText] = useState('');
+  const [sortAlpha, setSortAlpha] = useState(false);
+
+  const getFilteredItems = useCallback(() => {
+    let result = items.filter(item =>
+      item.toLowerCase().includes(filterText.toLowerCase())
+    );
+    if (sortAlpha) {
+      result = result.slice().sort((a, b) => a.localeCompare(b));
     }
+    return result;
+  }, [items, filterText, sortAlpha]);
 
-    getFilteredItems = (items, filterText, sortAlpha) => {
-        let result = items.filter(item =>
-            item.toLowerCase().includes(filterText.toLowerCase())
-        );
-        if (sortAlpha) {
-            result = result.slice().sort((a, b) => a.localeCompare(b));
-        }
-        return result;
-    };
+  const filteredItems = useMemo(() => getFilteredItems(), [getFilteredItems]);
 
-    updateFilteredItems = () => {
-        const filteredItems = this.getFilteredItems(
-            this.props.items,
-            this.state.filterText,
-            this.state.sortAlpha
-        );
-        this.setState({ filteredItems });
-    };
+  const handleTextChange = (e) => setFilterText(e.target.value);
 
-    handleTextChange = (e) => {
-        this.setState({ filterText: e.target.value }, this.updateFilteredItems);
-    };
+  const handleCheckboxChange = (e) => setSortAlpha(e.target.checked);
 
-    handleCheckboxChange = (e) => {
-        this.setState({ sortAlpha: e.target.checked }, this.updateFilteredItems);
-    }
+  const handleReset = () => {
+    setFilterText('');
+    setSortAlpha(false);
+  };
 
-    handleReset = () => {
-        this.setState(
-            {
-                filterText: '',
-                sortAlpha: false,
-            },
-            this.updateFilteredItems
-        );
-    };
-
-    render() {
-        const { filterText, sortAlpha, filteredItems } = this.state;
-
-        return (
-            <div className="filter-container">
-                <Controls
-                    filterText={filterText}
-                    sortAlpha={sortAlpha}
-                    onTextChange={this.handleTextChange}
-                    onCheckboxChange={this.handleCheckboxChange}
-                    onReset={this.handleReset}
-                />
-                <List items={filteredItems} />
-            </div>
-        );
-    }
-}
+  return (
+    <div className="filter-container">
+      <Controls
+        filterText={filterText}
+        sortAlpha={sortAlpha}
+        onTextChange={handleTextChange}
+        onCheckboxChange={handleCheckboxChange}
+        onReset={handleReset}
+      />
+      <List items={filteredItems} />
+    </div>
+  );
+};
 
 export default Filter;
