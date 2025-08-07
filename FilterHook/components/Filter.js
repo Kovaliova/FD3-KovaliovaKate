@@ -19,9 +19,9 @@ const Filter = ({ items }) => {
 
   const filteredItems = useMemo(() => getFilteredItems(), [getFilteredItems]);
 
-  const handleTextChange = (e) => setFilterText(e.target.value);
+  const handleTextChange = (newText) => setFilterText(newText);
 
-  const handleCheckboxChange = (e) => setSortAlpha(e.target.checked);
+  const handleSortChange = (isChecked) => setSortAlpha(isChecked);
 
   const handleReset = () => {
     setFilterText('');
@@ -34,7 +34,7 @@ const Filter = ({ items }) => {
         filterText={filterText}
         sortAlpha={sortAlpha}
         onTextChange={handleTextChange}
-        onCheckboxChange={handleCheckboxChange}
+        onSortChange={handleSortChange}
         onReset={handleReset}
       />
       <List items={filteredItems} />
