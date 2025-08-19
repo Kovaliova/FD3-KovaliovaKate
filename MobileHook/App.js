@@ -1,97 +1,73 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import 'regenerator-runtime/runtime';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+import store from './store/store';
+import { fetchClients, deleteClient, editClient, addClient } from './store/clientsSlice';
 
-import { clientsArr } from './Clients.js';
-import ClientList from './components/ClientList.js';
-import FilterButtons from './components/FilterButtons.js';
-import mobileEvents from './Events.js';
+import ClientList from './components/ClientList';
+import FilterButtons from './components/FilterButtons';
+import mobileEvents from './Events';
 import './main.css';
 
-const App = () => {
-  const [clients, setClients] = useState(clientsArr);
+const AppComponent = () => {
+  const clients = useSelector(state => state.clientsData.clients);
+  const { status, error } = useSelector(state => state.clientsData);
+  const dispatch = useDispatch();
   const [filter, setFilter] = useState('all');
   const [editingClients, setEditingClients] = useState(new Set());
 
-  const deleteClient = useCallback((id) => {
-    setClients((prevClients) => prevClients.filter(c => c.id !== id));
-    setEditingClients((prev) => {
+  useEffect(() => { dispatch(fetchClients()); }, [dispatch]);
+
+  const updateEditingClients = (id, action) => {
+    setEditingClients(prev => {
       const newSet = new Set(prev);
-      newSet.delete(id);
+      if (action === 'add') newSet.add(id);
+      if (action === 'delete') newSet.delete(id);
       return newSet;
     });
-  }, []);
-
-  const editClient = useCallback((id, surname, firstName, patronymic, balance) => {
-    setClients((prevClients) =>  prevClients.map(c => c.id === id  ? { ...c, surname, firstName, patronymic, balance: +balance }  : c ));
-    setEditingClients((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(id);
-      return newSet;
-    });
-  }, []);
-
-  const addClient = useCallback(() => {
-    setClients((prevClients) => {
-      const newId = prevClients.length > 0
-        ? Math.max(...prevClients.map(c => c.id)) + 1
-        : 1;
-      const newClient = {
-        id: newId,
-        surname: '',
-        firstName: '',
-        patronymic: '',
-        balance: 0,
-      };
-      return [...prevClients, newClient];
-    });
-
-    setEditingClients((prev) => {
-      const newSet = new Set(prev);
-      const newId = clients.length > 0
-        ? Math.max(...clients.map(c => c.id)) + 1
-        : 1;
-      newSet.add(newId);
-      return newSet;
-    });
-  }, [clients]);
-
-  const startEditClient = useCallback((id) => {
-    setEditingClients((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(id);
-      return newSet;
-    });
-  }, []);
-
-  const changeFilter = useCallback((newFilter) => {  setFilter(newFilter); }, []);
+  };
 
   useEffect(() => {
-    mobileEvents.on('delete', deleteClient);
-    mobileEvents.on('edit', editClient);
-    mobileEvents.on('add', addClient);
-    mobileEvents.on('changeFilter', changeFilter);
-    mobileEvents.on('startEdit', startEditClient);
-
-    return () => {
-      mobileEvents.removeAllListeners();
+    const handlers = {
+      delete: (id) => { dispatch(deleteClient(id)); updateEditingClients(id, 'delete'); },
+      edit: (id, surname, firstName, patronymic, balance) => {
+        dispatch(editClient({ id, surname, firstName, patronymic, balance: +balance }));
+        updateEditingClients(id, 'delete');
+      },
+      startEdit: (id) => updateEditingClients(id, 'add'),
+      changeFilter: setFilter
     };
-  }, [deleteClient, editClient, addClient, changeFilter, startEditClient]);
+
+    Object.entries(handlers).forEach(([event, fn]) => mobileEvents.on(event, fn));
+    return () => mobileEvents.removeAllListeners();
+  }, [dispatch]);
+
+  const handleAddClient = () => {
+    dispatch(addClient());
+    const lastClient = store.getState().clientsData.clients.slice(-1)[0];
+    if (lastClient) updateEditingClients(lastClient.id, 'add');
+  };
 
   const getFilteredClients = () => {
+    if (!clients) return [];
     if (filter === 'blocked') return clients.filter(c => c.balance < 0);
     if (filter === 'active') return clients.filter(c => c.balance >= 0);
     return clients;
   };
 
-  console.log('App render');
+  if (status === 'loading') return <p>Loading...</p>;
+  if (status === 'failed') return <p>Error: {error}</p>;
 
   return (
     <React.Fragment>
       <FilterButtons />
       <ClientList clients={getFilteredClients()} editingClients={editingClients} />
-      <button onClick={() => mobileEvents.emit('add')} style={{ marginTop: '20px' }}>Добавить клиента</button>
+      <button onClick={handleAddClient} style={{ marginTop: '20px' }}>
+        Добавить клиента
+      </button>
     </React.Fragment>
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('container'));
+ReactDOM.render(<Provider store={store}> <AppComponent /> </Provider>, document.getElementById('container'));
