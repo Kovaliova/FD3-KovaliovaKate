@@ -3,7 +3,7 @@ import ClientRow from "./ClientRow";
 
 class ClientList extends React.PureComponent {
   render() {
-    console.log("ClientList render");
+    const { clients, editingClients } = this.props;
 
     return (
       <table>
@@ -19,8 +19,12 @@ class ClientList extends React.PureComponent {
           </tr>
         </thead>
         <tbody>
-          {this.props.clients.map(client => (
-            <ClientRow key={client.id} client={client} isEditing={this.props.editingClients.has(client.id)}/>
+          {clients.map(client => (
+            <ClientRow
+              key={client.id}
+              client={client}
+              isEditing={editingClients.has(client.id)}
+            />
           ))}
         </tbody>
       </table>
